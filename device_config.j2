@@ -1,6 +1,6 @@
 {% if data.NetworkDevice.edges and data.NetworkDevice.edges is iterable %}
 {% for device in data["NetworkDevice"]["edges"] %}
-
+!
 {%   if data.NetworkVlan.edges and data.NetworkVlan.edges is iterable %}
 {%   for vlan in data["NetworkVlan"]["edges"] %}
 {%   set vlan_name = vlan.node.name.value %}
@@ -9,24 +9,29 @@ vlan {{ vlan_id }}
   name {{ vlan_name }}
 {%   endfor %}
 {%   endif %}
-
-
 {%   if device.node.interfaces.edges and device.node.interfaces.edges is iterable %}
 {%   for interface in device.node.interfaces.edges %}
 {%   set interface_name = interface.node.name.value %}
+{%   set interface_description = interface.node.description.value %}
 {%   set interface_mode = interface.node.mode.value %}
 {%   set interface_status = interface.node.status.value %}
 {%   set interface_vlan = interface.node.vlan.edges | default([]) %}
+{%   set interface_ip_address = interface.node.ip_address.node %}
+!
 interface {{ interface_name }}
 {%     if interface_status == "down" %}
   shutdown
 {%     else %}
   no shutdown
 {%     endif %}
-
+{%     if interface_description %}
+  description {{ interface_description }}
+{%     endif %}
 {%     if interface_mode == "routed" %}
   no switchport
-{# TODO #}
+{%       if interface_ip_address %}
+  ip address {{ interface_ip_address.address.value }}
+{%       endif %}
 {%     endif %}
 {%     if interface_mode == "access" %}
   switchport mode access
@@ -38,13 +43,12 @@ interface {{ interface_name }}
   switchport mode trunk
 {%       if interface_vlan %}
   switchport trunk allowed vlans {% for vlan in interface_vlan %}{{ vlan.node.vlan_id.value }}{% if not loop.last %}, {% endif %}{% endfor %}
+
 {%       endif %}
 {%     endif %}
-
-
 {%   endfor %}
 {%   endif %}
-
+!
 end
 {% endfor %}
 {% endif %}

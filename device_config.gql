@@ -8,6 +8,9 @@ query DeviceQuery($name: String!) {
               name {
                 value
               }
+              description {
+                value
+              }
               mode {
                 value
               }
@@ -20,6 +23,13 @@ query DeviceQuery($name: String!) {
                     vlan_id {
                       value
                     }
+                  }
+                }
+              }
+              ip_address {
+                node {
+                  address {
+                    value
                   }
                 }
               }
