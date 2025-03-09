@@ -67,9 +67,6 @@ nodes:
           - name: access
             label: Access
             description: "Access port"
-          - name: access_trunk
-            label: Access Trunk
-            description: "Trunk port to host"
           - name: trunk
             label: Trunk
             description: "Trunk port"
