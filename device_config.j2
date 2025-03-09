@@ -1,7 +1,5 @@
 {% if data.NetworkDevice.edges and data.NetworkDevice.edges is iterable %}
 {% for device in data["NetworkDevice"]["edges"] %}
-{% set device_name = device.node.name.value %}
-hostname {{ device_name }}
 
 {%   if data.NetworkVlan.edges and data.NetworkVlan.edges is iterable %}
 {%   for vlan in data["NetworkVlan"]["edges"] %}
