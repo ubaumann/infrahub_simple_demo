@@ -1,0 +1,147 @@
+# yamllint disable rule:line-length
+# yaml-language-server: $schema=https://schema.infrahub.app/infrahub/schema/latest.json
+---
+version: "1.0"
+nodes:
+  - name: Device
+    namespace: Network
+    inherit_from: ["CoreArtifactTarget"]
+    display_labels:
+      - "name__value"
+    icon: "mdi:router-network"
+    attributes:
+      - name: name
+        kind: Text
+        unique: true
+      - name: description
+        kind: Text
+        optional: true
+      - name: platform
+        kind: Text
+        optional: false
+      - name: user
+        kind: Text
+        optional: true
+      - name: password
+        kind: Password
+        optional: true
+      - name: port
+        kind: Number
+        optional: true
+      - name: status
+        kind: Dropdown
+        choices:
+          - name: active
+            label: Active
+            description: "Device is active"
+          - name: maintenance
+            label: Maintenance
+            description: "Device is in maintenance"
+          - name: offline
+            label: Offline
+            description: "Device is offline"
+    relationships:
+      - name: interfaces
+        identifier: "device__interface"
+        cardinality: many
+        peer: NetworkInterface
+        kind: Component
+
+  - name: Interface
+    namespace: Network
+    include_in_menu: true
+    icon: "mdi:ethernet"
+    display_labels:
+      - "name__value"
+    uniqueness_constraints:
+      - ["device", "name__value"]
+    attributes:
+      - name: name
+        kind: Text
+      - name: description
+        kind: Text
+        optional: true
+      - name: mode
+        kind: Dropdown
+        choices:
+          - name: access
+            label: Access
+            description: "Access port"
+          - name: access_trunk
+            label: Access Trunk
+            description: "Trunk port to host"
+          - name: trunk
+            label: Trunk
+            description: "Trunk port"
+          - name: routed
+            label: Routed
+            description: "Routed port"
+          - name: unused
+            label: Unused
+            description: "Unused port"
+      - name: status
+        kind: Dropdown
+        choices:
+          - name: up
+            label: Up
+            description: "Interface is operational"
+          - name: down
+            label: Down
+            description: "Interface is not operational(shut down)"
+    relationships:
+      - name: device
+        peer: NetworkDevice
+        identifier: "device__interface"
+        optional: false
+        cardinality: one
+        kind: Parent
+      - name: ip_address
+        peer: IpamIPAddress
+        cardinality: one
+        optional: true
+        kind: Attribute
+      - name: vlan
+        peer: NetworkVlan
+        identifier: "interface__vlan"
+        optional: true
+        cardinality: many
+        kind: Attribute
+        description: "VLANs associated with this interface"
+
+  - name: Vlan
+    namespace: Network
+    icon: "mdi:cloud"
+    display_labels:
+      - "name__value"
+      - "vlan_id__value"
+    attributes:
+      - name: name
+        kind: Text
+        description: "VLAN Name"
+      - name: vlan_id
+        kind: Number
+        unique: true
+        description: "VLAN ID"
+      - name: status
+        kind: Dropdown
+        choices:
+          - name: active
+            label: Active
+          - name: inactive
+            label: Inactive
+        description: "Status of the VLAN"
+
+  - name: IPPrefix
+    namespace: Ipam
+    inherit_from:
+      - "BuiltinIPPrefix"
+    description: "IPv4 or IPv6 network"
+    label: "IP Prefix"
+
+  - name: IPAddress
+    namespace: Ipam
+    inherit_from:
+      - "BuiltinIPAddress"
+    description: "IP Address"
+    label: "IP Address"
+
