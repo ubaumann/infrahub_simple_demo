@@ -79,12 +79,12 @@ nodes:
       - name: status
         kind: Dropdown
         choices:
-          - name: up
-            label: Up
-            description: "Interface is operational"
           - name: down
             label: Down
             description: "Interface is not operational(shut down)"
+          - name: up
+            label: Up
+            description: "Interface is operational"
     relationships:
       - name: device
         peer: NetworkDevice
